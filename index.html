@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es-PE" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Mesa Digital | Automatización de Pedidos para Restaurantes en Piura</title>
+  <meta name="description" content="Convierte los mensajes de WhatsApp en comandas listas para cocina en 20 segundos. Sin comisiones por venta ni desorden en horas punta.">
+  <meta name="theme-color" content="#09090b">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='18' height='18' x='3' y='3' rx='2'/><path d='m9 12 2 2 4-4'/></svg>">
+
+  <!-- Open Graph / WhatsApp / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Mesa Digital | Automatización de Pedidos en 20 Segundos">
+  <meta property="og:description" content="Comandas listas para cocina directo a tu WhatsApp. Sin comisiones por pedido. Garantía de 7 días.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&h=630&q=80">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="es_PE">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mesa Digital | Automatización de Pedidos">
+  <meta name="twitter:description" content="Comandas listas para cocina directo a tu WhatsApp. Sin comisiones por pedido.">
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&h=630&q=80">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            // Tokens semánticos (HSL)
+            brand: { DEFAULT: 'hsl(24.6 95% 53.1%)', soft: 'hsl(24.6 95% 53.1% / 0.12)' }, // orange-500 · gastronomía
+            ok: { DEFAULT: 'hsl(160.1 84.1% 39.4%)', soft: 'hsl(160.1 84.1% 39.4% / 0.12)' }, // emerald-500 · éxito / WhatsApp
+            surface: { DEFAULT: 'hsl(240 10% 3.9%)', raised: 'hsl(240 5.9% 10%)', line: 'hsl(240 3.7% 15.9%)' }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+
+  <style>
+    [x-cloak] { display: none !important; }
+
+    html { scroll-padding-top: 6rem; -webkit-tap-highlight-color: transparent; }
+
+    body { font-feature-settings: "ss01", "cv11"; }
+
+    /* Retícula sutil de fondo con desvanecido radial */
+    .bg-grid {
+      background-image:
+        linear-gradient(to right, hsl(240 3.7% 15.9% / .45) 1px, transparent 1px),
+        linear-gradient(to bottom, hsl(240 3.7% 15.9% / .45) 1px, transparent 1px);
+      background-size: 56px 56px;
+      -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 40%, transparent 100%);
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 40%, transparent 100%);
+    }
+
+    /* Borde dentado del ticket térmico */
+    .ticket-edge {
+      -webkit-mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 16px 100% repeat-x;
+      mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 16px 100% repeat-x;
+      padding-bottom: 14px;
+    }
+
+    /* Reveal on scroll: solo se oculta si JS está activo */
+    .js .reveal { opacity: 0; transform: translateY(14px); transition: opacity .28s ease-out, transform .28s ease-out; }
+    .js .reveal.is-visible { opacity: 1; transform: none; }
+
+    .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 12px); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .js .reveal { opacity: 1; transform: none; transition: none; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+
+<body class="bg-surface text-zinc-300 font-sans antialiased selection:bg-brand/30 selection:text-white"
+  x-data="landing()" x-init="init()">
+
+  <!-- ============================================================
+       1. NAVBAR SUPERIOR (flotante)
+       ============================================================ -->
+  <header class="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4" x-data="{ open: false }"
+    @keydown.escape.window="open = false">
+    <nav aria-label="Principal"
+      class="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-2xl border border-zinc-800/80 bg-zinc-950/70 px-4 py-2.5 backdrop-blur-xl sm:px-5">
+      <a href="#inicio" id="nav-logo" class="flex items-center gap-2.5 group">
+        <span
+          class="grid h-9 w-9 place-items-center rounded-xl border border-brand/30 bg-brand-soft text-brand transition-colors group-hover:border-brand/60">
+          <i data-lucide="utensils-crossed" class="h-[18px] w-[18px]"></i>
+        </span>
+        <span class="flex flex-col leading-none sm:flex-row sm:items-center sm:gap-2.5">
+          <span class="text-[15px] font-extrabold tracking-tight text-white">Mesa Digital</span>
+          <span
+            class="mt-1 w-fit rounded-md border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 font-mono text-[9.5px] font-medium uppercase tracking-wider text-zinc-400 sm:mt-0">Software
+            Gastronómico</span>
+        </span>
+      </a>
+
+      <ul class="hidden items-center gap-1 md:flex">
+        <li><a id="nav-link-problema" href="#problema"
+            class="rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white">El
+            Problema</a></li>
+        <li><a id="nav-link-demo" href="#demo"
+            class="rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white">Demo
+            en Vivo</a></li>
+        <li><a id="nav-link-precios" href="#precios"
+            class="rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white">Precios
+            &amp; Garantía</a></li>
+      </ul>
+
+      <div class="flex items-center gap-2">
+        <a id="nav-cta-whatsapp"
+          href="https://wa.me/51957418893?text=Hola%20Mesa%20Digital,%20quiero%20activar%20mi%20restaurante%20con%20la%20garant%C3%ADa%20de%207%20d%C3%ADas"
+          target="_blank" rel="noopener"
+          class="hidden items-center gap-2 rounded-xl bg-ok px-4 py-2 text-sm font-bold text-zinc-950 shadow-[0_0_0_1px_hsl(160_84%_39%/.4),0_8px_24px_-8px_hsl(160_84%_39%/.6)] transition-all duration-200 ease-out hover:-translate-y-px hover:bg-emerald-400 sm:inline-flex">
+          <i data-lucide="message-circle" class="h-4 w-4"></i>
+          Activar mi local
+        </a>
+        <button id="nav-menu-toggle" type="button" @click="open = !open" :aria-expanded="open"
+          aria-controls="mobile-menu" aria-label="Abrir menú"
+          class="grid h-10 w-10 place-items-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-300 md:hidden">
+          <span x-show="!open"><i data-lucide="menu" class="h-5 w-5"></i></span>
+          <span x-show="open" x-cloak><i data-lucide="x" class="h-5 w-5"></i></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Menú móvil -->
+    <div id="mobile-menu" x-show="open" x-cloak x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0" @click.outside="open = false"
+      class="mx-auto mt-2 max-w-6xl rounded-2xl border border-zinc-800 bg-zinc-950/95 p-2 backdrop-blur-xl md:hidden">
+      <a href="#problema" @click="open = false"
+        class="flex items-center justify-between rounded-xl px-4 py-3.5 text-[15px] font-semibold text-zinc-200 hover:bg-zinc-900">El
+        Problema <i data-lucide="chevron-right" class="h-4 w-4 text-zinc-600"></i></a>
+      <a href="#demo" @click="open = false"
+        class="flex items-center justify-between rounded-xl px-4 py-3.5 text-[15px] font-semibold text-zinc-200 hover:bg-zinc-900">Demo
+        en Vivo <i data-lucide="chevron-right" class="h-4 w-4 text-zinc-600"></i></a>
+      <a href="#precios" @click="open = false"
+        class="flex items-center justify-between rounded-xl px-4 py-3.5 text-[15px] font-semibold text-zinc-200 hover:bg-zinc-900">Precios
+        &amp; Garantía <i data-lucide="chevron-right" class="h-4 w-4 text-zinc-600"></i></a>
+      <a id="mobile-menu-cta"
+        href="https://wa.me/51957418893?text=Hola%20Mesa%20Digital,%20quiero%20activar%20mi%20restaurante%20con%20la%20garant%C3%ADa%20de%207%20d%C3%ADas"
+        target="_blank" rel="noopener"
+        class="mt-1 flex items-center justify-center gap-2 rounded-xl bg-ok px-4 py-3.5 text-[15px] font-bold text-zinc-950">
+        <i data-lucide="message-circle" class="h-4 w-4"></i> Activar mi local
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============================================================
+         2. HERO — ABOVE THE FOLD
+         ============================================================ -->
+    <section id="inicio" x-ref="hero" class="relative overflow-hidden pt-32 pb-20 sm:pt-40 lg:pb-28">
+      <div class="bg-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+      <div
+        class="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-brand/[0.07] blur-[120px]"
+        aria-hidden="true"></div>
+
+      <div class="relative mx-auto grid max-w-6xl items-center gap-14 px-5 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10">
+        <!-- Copy -->
+        <div class="reveal">
+          <p
+            class="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/80 py-1.5 pl-2 pr-3.5 text-xs font-medium text-zinc-300 sm:text-[13px]">
+            <span class="grid h-5 w-5 place-items-center rounded-full bg-brand-soft text-[11px]">🚀</span>
+            Automatización de pedidos para restaurantes y dark kitchens
+          </p>
+
+          <h1
+            class="mt-6 text-[2.15rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[3.4rem]">
+            Convierte los mensajes de WhatsApp en comandas listas para cocina en
+            <span class="whitespace-nowrap font-mono text-brand">20&nbsp;segundos.</span>
+          </h1>
+
+          <p class="mt-5 inline-flex items-center gap-2.5 text-lg font-semibold text-zinc-100 sm:text-xl">
+            <span class="h-6 w-1 rounded-full bg-ok" aria-hidden="true"></span>
+            Sin comisiones por venta ni desorden en horas punta.
+          </p>
+
+          <p class="mt-5 max-w-xl text-[15.5px] leading-relaxed text-zinc-400 sm:text-base">
+            Viernes 8:30&nbsp;p.&nbsp;m., cocina a tope y el celular no para: audios interminables, direcciones sin mapa
+            y platos mal anotados que vuelven a la cocina. Mesa Digital ordena cada pedido antes de que llegue a tus
+            manos, para que tu equipo solo se dedique a cocinar y despachar.
+          </p>
+
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <a id="hero-cta-whatsapp"
+              href="https://wa.me/51957418893?text=Hola%20Mesa%20Digital,%20quiero%20activar%20mi%20restaurante%20con%20la%20garant%C3%ADa%20de%207%20d%C3%ADas"
+              target="_blank" rel="noopener"
+              class="group inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl bg-ok px-6 text-[15px] font-bold text-zinc-950 shadow-[0_0_0_1px_hsl(160_84%_39%/.4),0_14px_40px_-12px_hsl(160_84%_39%/.7)] transition-all duration-200 ease-out hover:-translate-y-px hover:bg-emerald-400">
+              📲 Activar mi local por WhatsApp
+              <i data-lucide="arrow-right" class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"></i>
+            </a>
+            <a id="hero-cta-como-funciona" href="#problema"
+              class="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border border-zinc-800 bg-zinc-900/60 px-6 text-[15px] font-semibold text-zinc-200 transition-all duration-200 ease-out hover:-translate-y-px hover:border-zinc-700 hover:bg-zinc-900">
+              Ver cómo funciona <i data-lucide="arrow-down" class="h-4 w-4"></i>
+            </a>
+          </div>
+
+          <ul class="mt-7 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[11.5px] font-medium text-zinc-500 sm:text-xs">
+            <li class="flex items-center gap-1.5"><i data-lucide="clock" class="h-3.5 w-3.5 text-ok"></i>Configuración
+              en 24 horas</li>
+            <li aria-hidden="true" class="text-zinc-700">•</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="file-x" class="h-3.5 w-3.5 text-ok"></i>Sin contratos
+              forzosos</li>
+            <li aria-hidden="true" class="text-zinc-700">•</li>
+            <li class="flex items-center gap-1.5"><i data-lucide="smartphone" class="h-3.5 w-3.5 text-ok"></i>Tu cliente
+              pide sin descargar apps</li>
+          </ul>
+        </div>
+
+        <!-- Visual: ticket térmico estructurado -->
+        <div class="reveal relative mx-auto w-full max-w-[360px] lg:mr-0" aria-label="Ejemplo de comanda generada por Mesa Digital">
+          <!-- Chip: audio eliminado -->
+          <div
+            class="absolute -left-4 top-10 z-10 hidden items-center gap-2 rounded-xl border border-red-500/20 bg-zinc-950/90 px-3 py-2 text-xs text-zinc-400 shadow-xl backdrop-blur sm:flex lg:-left-14">
+            <i data-lucide="mic" class="h-3.5 w-3.5 text-red-400"></i>
+            <span class="font-mono line-through decoration-red-400/70">Audio 0:50</span>
+          </div>
+          <!-- Chip: recibido -->
+          <div
+            class="absolute -right-3 -top-4 z-10 flex items-center gap-2 rounded-xl border border-ok/30 bg-zinc-950/90 px-3 py-2 text-xs font-semibold text-zinc-200 shadow-xl backdrop-blur lg:-right-8">
+            <span class="relative flex h-2 w-2"><span
+                class="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok opacity-60"></span><span
+                class="relative inline-flex h-2 w-2 rounded-full bg-ok"></span></span>
+            Comanda lista · <span class="font-mono text-ok">20 s</span>
+          </div>
+
+          <div class="rounded-[28px] border border-zinc-800 bg-zinc-900/70 p-3 shadow-2xl shadow-black/60">
+            <div class="ticket-edge rounded-t-[20px] bg-[#f4f2ec] px-5 pt-5 font-mono text-[11.5px] leading-relaxed text-zinc-800">
+              <div class="flex items-start justify-between border-b border-dashed border-zinc-400 pb-3">
+                <div>
+                  <p class="text-[13px] font-bold tracking-tight text-zinc-950">COMANDA #0482</p>
+                  <p class="text-zinc-500">SÁB 20:47 · DELIVERY</p>
+                </div>
+                <span class="rounded bg-zinc-950 px-1.5 py-0.5 text-[10px] font-bold text-[#f4f2ec]">COCINA</span>
+              </div>
+
+              <div class="space-y-2 border-b border-dashed border-zinc-400 py-3">
+                <div>
+                  <div class="flex justify-between font-bold text-zinc-950"><span>2x Smash Doble</span><span>51.80</span></div>
+                  <p class="pl-3 text-zinc-600">+ Tocino extra</p>
+                  <p class="pl-3 text-zinc-600">Cremas: Mayo · Ají · Golf</p>
+                </div>
+                <div class="flex justify-between font-bold text-zinc-950"><span>1x Papas Rústicas</span><span>12.00</span></div>
+                <div class="flex justify-between font-bold text-zinc-950"><span>1x Inca Kola 1L</span><span>8.00</span></div>
+              </div>
+
+              <div class="space-y-1 border-b border-dashed border-zinc-400 py-3 text-zinc-700">
+                <p><span class="text-zinc-500">Cliente:</span> Andrea R. · 9XX XXX 214</p>
+                <p class="flex items-center gap-1"><span class="text-zinc-500">GPS:</span> Av. Grau 1240, Piura</p>
+                <p class="font-bold text-emerald-700 underline decoration-dotted underline-offset-2">↗ Abrir en Google Maps</p>
+                <p><span class="text-zinc-500">Pago:</span> <b class="text-zinc-950">YAPE</b> · Boleta</p>
+              </div>
+
+              <div class="space-y-0.5 pt-3">
+                <div class="flex justify-between text-zinc-600"><span>Subtotal</span><span>S/ 71.80</span></div>
+                <div class="flex justify-between text-zinc-600"><span>Delivery · Zona 2</span><span>S/ 5.00</span></div>
+                <div class="flex justify-between pt-1 text-[14px] font-bold text-zinc-950"><span>TOTAL</span><span>S/ 76.80</span></div>
+              </div>
+            </div>
+            <div class="mt-3 flex items-center justify-between rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3">
+              <span class="flex items-center gap-2 text-xs font-medium text-zinc-400"><i data-lucide="printer"
+                  class="h-4 w-4 text-brand"></i>Enviar a comandera</span>
+              <span class="rounded-lg bg-brand px-2.5 py-1 font-mono text-[11px] font-bold text-zinc-950">1 clic</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         3. EL PROBLEMA REAL EN HORAS PUNTA — COMPARATIVA A/B
+         ============================================================ -->
+    <section id="problema" class="relative border-t border-zinc-900 bg-zinc-950 py-20 sm:py-28">
+      <div class="mx-auto max-w-6xl px-5 sm:px-6">
+        <div class="reveal max-w-2xl">
+          <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-brand">El problema</p>
+          <h2 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
+            El costo oculto de atender pedidos manualmente los fines de semana
+          </h2>
+          <p class="mt-4 text-zinc-400">Cada pedido mal tomado es tiempo de cocina perdido, un delivery que da vueltas y
+            un cliente que no vuelve.</p>
+        </div>
+
+        <div class="mt-12 grid gap-5 md:grid-cols-2">
+          <!-- El caos -->
+          <article class="reveal rounded-3xl border border-red-500/20 bg-red-950/10 p-6 sm:p-8">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-lg font-bold text-white sm:text-xl">Atención tradicional por WhatsApp</h3>
+              <span
+                class="shrink-0 rounded-md border border-red-500/20 bg-red-500/10 px-2 py-1 font-mono text-[10.5px] font-bold uppercase tracking-wider text-red-300">Manual</span>
+            </div>
+            <ul class="mt-6 space-y-4">
+              <li class="flex gap-3.5">
+                <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-red-500/10 text-red-400"><i
+                    data-lucide="mic" class="h-4 w-4"></i></span>
+                <p class="text-[15px] leading-relaxed text-zinc-300">Audios de 50 segundos pidiendo cambios de ingredientes
+                  difíciles de escuchar en cocina.</p>
+              </li>
+              <li class="flex gap-3.5">
+                <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-red-500/10 text-red-400"><i
+                    data-lucide="map-pin-off" class="h-4 w-4"></i></span>
+                <p class="text-[15px] leading-relaxed text-zinc-300">Clientes que no mandan ubicación y toca preguntar 3
+                  veces su dirección.</p>
+              </li>
+              <li class="flex gap-3.5">
+                <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-red-500/10 text-red-400"><i
+                    data-lucide="triangle-alert" class="h-4 w-4"></i></span>
+                <p class="text-[15px] leading-relaxed text-zinc-300">Pérdida de tiempo respondiendo “¿A qué número
+                  yapeo?” y calculando el delivery a mano.</p>
+              </li>
+              <li class="flex gap-3.5">
+                <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-red-500/10 text-red-400"><i
+                    data-lucide="notebook-pen" class="h-4 w-4"></i></span>
+                <p class="text-[15px] leading-relaxed text-zinc-300">Comandas anotadas en servilletas o papel que generan
+                  pedidos equivocados.</p>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Mesa Digital -->
+          <article
+            class="reveal relative rounded-3xl border border-ok/30 bg-emerald-950/10 p-6 shadow-[0_0_60px_-30px_hsl(160_84%_39%/.5)] sm:p-8">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-lg font-bold text-white sm:text-xl">Con Mesa Digital</h3>
+              <span
+                class="shrink-0 rounded-md border border-ok/30 bg-ok-soft px-2 py-1 font-mono text-[10.5px] font-bold uppercase tracking-wider text-emerald-300">Automatizado</span>
+            </div>
+            <ul class="mt-6 space-y-4">
+              <li class="flex gap-3.5">
+                <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ok-soft text-emerald-400"><i
+                    data-lucide="receipt-text" class="h-4 w-4"></i></span>
+                <p class="text-[15px] leading-relaxed text-zinc-200">Ticket térmico estructurado con nombre, cantidad,
+                  salsas y extras exactos.</p>
+              </li>
+              <li class="flex gap-3.5">
+                <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ok-soft text-emerald-400"><i
+                    data-lucide="map-pinned" class="h-4 w-4"></i></span>
+                <p class="text-[15px] leading-relaxed text-zinc-200">Ubicación GPS exacta con enlace directo a Google Maps
+                  y delivery precalculado.</p>
+              </li>
+              <li class="flex gap-3.5">
+                <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ok-soft text-emerald-400"><i
+                    data-lucide="wallet" class="h-4 w-4"></i></span>
+                <p class="text-[15px] leading-relaxed text-zinc-200">Método de pago definido (Yape / Plin / Efectivo) y
+                  comprobante (Boleta / Factura).</p>
+              </li>
+              <li class="flex gap-3.5">
+                <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ok-soft text-emerald-400"><i
+                    data-lucide="circle-check" class="h-4 w-4"></i></span>
+                <p class="text-[15px] leading-relaxed text-zinc-200">Comanda lista para enviar directo a la comandera o
+                  pantalla de cocina en 1 clic.</p>
+              </li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         4. DEMOSTRACIÓN INTERACTIVA EN VIVO — BRUTAL BURGERS
+         ============================================================ -->
+    <section id="demo" class="relative overflow-hidden border-t border-zinc-900 py-20 sm:py-28">
+      <div
+        class="pointer-events-none absolute right-[-10%] top-1/3 h-[480px] w-[480px] rounded-full bg-brand/[0.08] blur-[120px]"
+        aria-hidden="true"></div>
+
+      <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-5 sm:px-6 lg:grid-cols-[1fr_auto] lg:gap-16">
+        <div class="reveal">
+          <p class="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.18em] text-brand">
+            <span class="relative flex h-2 w-2"><span
+                class="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok opacity-60"></span><span
+                class="relative inline-flex h-2 w-2 rounded-full bg-ok"></span></span>
+            Demo en vivo
+          </p>
+          <h2 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">Pruébalo tú mismo en
+            vivo</h2>
+          <p class="mt-4 max-w-lg text-zinc-400">Interactúa con la carta real de demostración de
+            <b class="font-semibold text-zinc-200">Brutal Burgers</b> desplegada en producción.</p>
+
+          <ol class="mt-8 space-y-3">
+            <li class="flex items-start gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4">
+              <span class="font-mono text-sm font-bold text-brand">01</span>
+              <p class="text-[15px] text-zinc-300"><b class="text-white">Arma tu pedido</b>: elige una burger, cremas y
+                extras como lo haría tu cliente.</p>
+            </li>
+            <li class="flex items-start gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4">
+              <span class="font-mono text-sm font-bold text-brand">02</span>
+              <p class="text-[15px] text-zinc-300"><b class="text-white">Marca tu ubicación</b> y mira cómo el delivery
+                se calcula solo por zona.</p>
+            </li>
+            <li class="flex items-start gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4">
+              <span class="font-mono text-sm font-bold text-brand">03</span>
+              <p class="text-[15px] text-zinc-300"><b class="text-white">Confirma</b> y recibe la comanda completa lista
+                para cocina en WhatsApp.</p>
+            </li>
+          </ol>
+
+          <a id="demo-open-desktop" href="https://brutal-burgers.vercel.app/" target="_blank" rel="noopener"
+            class="mt-6 hidden items-center gap-2 text-sm font-semibold text-zinc-400 transition-colors hover:text-white lg:inline-flex">
+            Abrir en una pestaña nueva <i data-lucide="external-link" class="h-4 w-4"></i>
+          </a>
+        </div>
+
+        <!-- Desktop: mockup iPhone con iframe en producción -->
+        <div class="reveal relative hidden lg:block">
+          <div
+            class="relative w-[352px] rounded-[54px] border border-zinc-700 bg-zinc-900 p-[10px] shadow-[0_50px_100px_-30px_rgba(0,0,0,.9),0_0_0_1px_rgba(255,255,255,.04)_inset]">
+            <!-- Botones laterales -->
+            <span class="absolute -left-[3px] top-[120px] h-8 w-[3px] rounded-l bg-zinc-700" aria-hidden="true"></span>
+            <span class="absolute -left-[3px] top-[170px] h-14 w-[3px] rounded-l bg-zinc-700" aria-hidden="true"></span>
+            <span class="absolute -left-[3px] top-[236px] h-14 w-[3px] rounded-l bg-zinc-700" aria-hidden="true"></span>
+            <span class="absolute -right-[3px] top-[190px] h-20 w-[3px] rounded-r bg-zinc-700" aria-hidden="true"></span>
+
+            <div class="relative overflow-hidden rounded-[44px] bg-black">
+              <!-- Barra de estado + Dynamic Island -->
+              <div class="relative flex h-9 items-center justify-between px-7 font-mono text-[11px] font-bold text-white">
+                <span>9:41</span>
+                <span class="absolute left-1/2 top-2 h-[22px] w-[96px] -translate-x-1/2 rounded-full bg-zinc-950 ring-1 ring-zinc-800"
+                  aria-hidden="true"></span>
+                <span class="flex items-center gap-1"><i data-lucide="signal" class="h-3 w-3"></i><i data-lucide="wifi"
+                    class="h-3 w-3"></i><i data-lucide="battery-full" class="h-3.5 w-3.5"></i></span>
+              </div>
+              <iframe src="https://brutal-burgers.vercel.app/" class="w-full h-[640px] rounded-[36px] border-0"
+                title="Demo en vivo: carta digital de Brutal Burgers" loading="lazy"></iframe>
+            </div>
+          </div>
+          <p class="mt-5 text-center font-mono text-[11px] text-zinc-500">brutal-burgers.vercel.app · en producción</p>
+        </div>
+
+        <!-- Móvil / tablet: tarjeta con captura + botón a pantalla completa -->
+        <div class="reveal lg:hidden">
+          <div class="overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/60">
+            <div class="relative aspect-[4/3] overflow-hidden sm:aspect-[16/9]">
+              <img src="demo-preview.jpg" alt="Smash burger de Brutal Burgers, restaurante de la demo en vivo"
+                class="h-full w-full object-cover" loading="lazy" width="1200" height="900" />
+              <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent"></div>
+              <span
+                class="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-zinc-950/70 px-2.5 py-1 font-mono text-[10.5px] font-bold uppercase tracking-wider text-zinc-200 backdrop-blur">
+                <span class="h-1.5 w-1.5 rounded-full bg-ok"></span> En producción
+              </span>
+              <div class="absolute inset-x-4 bottom-4">
+                <p class="text-xl font-extrabold tracking-tight text-white">BRUTAL Smash Burgers</p>
+                <p class="font-mono text-xs text-zinc-400">Carta digital · Piura · Pedido directo a WhatsApp</p>
+              </div>
+            </div>
+            <div class="p-4">
+              <a id="demo-open-mobile" href="https://brutal-burgers.vercel.app/" target="_blank" rel="noopener"
+                class="flex min-h-[56px] w-full items-center justify-center gap-2 rounded-2xl bg-brand px-5 text-[15px] font-bold text-zinc-950 shadow-[0_14px_40px_-14px_hsl(24.6_95%_53%/.8)] transition-transform duration-150 ease-out active:scale-[0.98]">
+                🚀 Abrir Demo Brutal Burgers a pantalla completa
+              </a>
+              <p class="mt-3 text-center text-xs text-zinc-500">Se abre en una pestaña nueva. Vuelve aquí cuando quieras.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         5. PRECIOS TRANSPARENTES & GARANTÍA DE 7 DÍAS
+         ============================================================ -->
+    <section id="precios" class="relative border-t border-zinc-900 bg-zinc-950 py-20 sm:py-28">
+      <div class="mx-auto max-w-5xl px-5 sm:px-6">
+        <div class="reveal mx-auto max-w-2xl text-center">
+          <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-brand">Precios &amp; Garantía</p>
+          <h2 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">Inversión clara. Sin
+            comisiones sorpresa.</h2>
+          <p class="mt-4 text-zinc-400">Pagas por el sistema, no por cada pedido. Tus ventas son 100% tuyas.</p>
+        </div>
+
+        <div class="mt-12 grid gap-5 md:grid-cols-2">
+          <!-- Setup -->
+          <article class="reveal flex flex-col rounded-3xl border border-zinc-800 bg-zinc-900/50 p-6 sm:p-8">
+            <div class="flex items-center justify-between">
+              <span class="grid h-10 w-10 place-items-center rounded-xl bg-brand-soft text-brand"><i data-lucide="rocket"
+                  class="h-5 w-5"></i></span>
+              <span
+                class="rounded-md border border-zinc-800 bg-zinc-950 px-2 py-1 font-mono text-[10.5px] font-bold uppercase tracking-wider text-zinc-400">Pago
+                único</span>
+            </div>
+            <h3 class="mt-5 text-lg font-bold text-white">Setup &amp; Puesta en Marcha</h3>
+            <p class="mt-3 flex items-baseline gap-1.5">
+              <span class="font-mono text-lg font-bold text-zinc-500">S/</span>
+              <span class="font-mono text-5xl font-bold tracking-tight text-white">199.90</span>
+            </p>
+            <ul class="mt-6 space-y-3 border-t border-zinc-800 pt-6 text-[15px] text-zinc-300">
+              <li class="flex gap-3"><i data-lucide="check" class="mt-0.5 h-5 w-5 shrink-0 text-ok"></i>Digitalización
+                completa de tu carta</li>
+              <li class="flex gap-3"><i data-lucide="check" class="mt-0.5 h-5 w-5 shrink-0 text-ok"></i>Integración con
+                Google Sheets</li>
+              <li class="flex gap-3"><i data-lucide="check" class="mt-0.5 h-5 w-5 shrink-0 text-ok"></i>Configuración de
+                cálculo GPS por zonas</li>
+              <li class="flex gap-3"><i data-lucide="check" class="mt-0.5 h-5 w-5 shrink-0 text-ok"></i>Enlace de WhatsApp
+                listo para operar</li>
+            </ul>
+          </article>
+
+          <!-- Mantenimiento -->
+          <article class="reveal flex flex-col rounded-3xl border border-zinc-800 bg-zinc-900/50 p-6 sm:p-8">
+            <div class="flex items-center justify-between">
+              <span class="grid h-10 w-10 place-items-center rounded-xl bg-ok-soft text-ok"><i data-lucide="server"
+                  class="h-5 w-5"></i></span>
+              <span
+                class="rounded-md border border-zinc-800 bg-zinc-950 px-2 py-1 font-mono text-[10.5px] font-bold uppercase tracking-wider text-zinc-400">Mensual
+                · sin permanencia</span>
+            </div>
+            <h3 class="mt-5 text-lg font-bold text-white">Mantenimiento e Infraestructura</h3>
+            <p class="mt-3 flex items-baseline gap-1.5">
+              <span class="font-mono text-lg font-bold text-zinc-500">S/</span>
+              <span class="font-mono text-5xl font-bold tracking-tight text-white">49.90</span>
+              <span class="font-mono text-sm text-zinc-500">/ mes</span>
+            </p>
+            <ul class="mt-6 space-y-3 border-t border-zinc-800 pt-6 text-[15px] text-zinc-300">
+              <li class="flex gap-3"><i data-lucide="check" class="mt-0.5 h-5 w-5 shrink-0 text-ok"></i>Hosting de alta
+                velocidad sin límites de pedidos</li>
+              <li class="flex gap-3"><i data-lucide="check" class="mt-0.5 h-5 w-5 shrink-0 text-ok"></i>Soporte técnico
+                prioritario</li>
+              <li class="flex gap-3"><i data-lucide="check" class="mt-0.5 h-5 w-5 shrink-0 text-ok"></i>Sincronización en
+                tiempo real</li>
+            </ul>
+          </article>
+        </div>
+
+        <p class="reveal mt-5 text-center font-mono text-xs text-zinc-500">
+          Primer mes total: <span class="text-zinc-300">S/ 249.80</span> · Después, solo <span
+            class="text-zinc-300">S/ 49.90/mes</span> · <span class="text-ok">0% de comisión por pedido</span>
+        </p>
+
+        <!-- Garantía -->
+        <div
+          class="reveal relative mt-10 overflow-hidden rounded-3xl border border-ok/40 bg-gradient-to-br from-emerald-950/40 via-zinc-900/60 to-zinc-900/60 p-6 sm:p-10">
+          <div class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-ok/10 blur-3xl"
+            aria-hidden="true"></div>
+          <div class="relative flex flex-col gap-6 md:flex-row md:items-center md:gap-10">
+            <span
+              class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl border border-ok/40 bg-ok-soft text-emerald-300">
+              <i data-lucide="shield-check" class="h-8 w-8"></i>
+            </span>
+            <div class="flex-1">
+              <h3 class="font-mono text-sm font-bold uppercase tracking-[0.14em] text-emerald-300">🛡️ Garantía de
+                satisfacción de 7 días</h3>
+              <p class="mt-3 text-[15.5px] leading-relaxed text-zinc-200 sm:text-base">
+                Prueba Mesa Digital durante tu fin de semana de mayor movimiento. Si el sistema no reduce tus tiempos de
+                toma de pedidos y los errores de despacho, te devolvemos el 100% de tu dinero de setup. Sin preguntas ni
+                letra chica.
+              </p>
+            </div>
+          </div>
+          <a id="guarantee-cta-whatsapp"
+            href="https://wa.me/51957418893?text=Hola%20Mesa%20Digital,%20quiero%20activar%20mi%20restaurante%20con%20la%20garant%C3%ADa%20de%207%20d%C3%ADas"
+            target="_blank" rel="noopener"
+            class="relative mt-8 flex min-h-[56px] w-full items-center justify-center gap-2 rounded-2xl bg-ok px-6 text-[15px] font-bold text-zinc-950 shadow-[0_14px_40px_-12px_hsl(160_84%_39%/.7)] transition-all duration-200 ease-out hover:-translate-y-px hover:bg-emerald-400 md:w-auto md:inline-flex">
+            <i data-lucide="message-circle" class="h-5 w-5"></i>
+            Reclamar mi prueba con Garantía de 7 días
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       6. FOOTER DE CIERRE
+       ============================================================ -->
+  <footer x-ref="footer" class="relative overflow-hidden border-t border-zinc-900 pt-20 pb-28 lg:pb-10">
+    <div class="bg-grid pointer-events-none absolute inset-0 rotate-180 opacity-60" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-6xl px-5 sm:px-6">
+      <div class="reveal mx-auto max-w-2xl text-center">
+        <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
+          Tu próximo fin de semana puede ser <span class="text-brand">distinto</span>.
+        </h2>
+        <p class="mt-4 text-zinc-400">Activamos tu local en 24 horas. Tú cocinas, Mesa Digital ordena los pedidos.</p>
+        <a id="footer-cta-whatsapp"
+          href="https://wa.me/51957418893?text=Hola%20Mesa%20Digital,%20quiero%20activar%20mi%20restaurante%20con%20la%20garant%C3%ADa%20de%207%20d%C3%ADas"
+          target="_blank" rel="noopener"
+          class="mt-8 inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl bg-ok px-7 text-[15px] font-bold text-zinc-950 transition-all duration-200 ease-out hover:-translate-y-px hover:bg-emerald-400">
+          📲 Activar mi local por WhatsApp
+        </a>
+      </div>
+
+      <div
+        class="mt-16 flex flex-col gap-6 border-t border-zinc-900 pt-8 text-sm text-zinc-500 md:flex-row md:items-center md:justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="grid h-8 w-8 place-items-center rounded-lg border border-brand/30 bg-brand-soft text-brand"><i
+              data-lucide="utensils-crossed" class="h-4 w-4"></i></span>
+          <span class="font-bold text-zinc-200">Mesa Digital</span>
+        </div>
+        <address class="flex flex-col gap-1 not-italic md:items-center">
+          <a id="footer-contact-whatsapp" href="https://wa.me/51957418893" target="_blank" rel="noopener"
+            class="inline-flex items-center gap-2 font-mono text-zinc-300 transition-colors hover:text-white">
+            <i data-lucide="message-circle" class="h-4 w-4 text-ok"></i> WhatsApp +51 957 418 893
+          </a>
+          <span class="inline-flex items-center gap-2"><i data-lucide="headset" class="h-4 w-4"></i>Servicio y soporte
+            técnico local</span>
+        </address>
+        <div class="flex flex-col gap-1 md:items-end">
+          <a id="footer-libro-reclamaciones"
+            href="https://wa.me/51957418893?text=Hola%20Mesa%20Digital,%20deseo%20registrar%20una%20hoja%20en%20el%20Libro%20de%20Reclamaciones"
+            target="_blank" rel="noopener"
+            class="inline-flex items-center gap-1.5 text-zinc-400 underline-offset-4 transition-colors hover:text-white hover:underline">
+            <i data-lucide="book-open" class="h-4 w-4"></i> Libro de Reclamaciones
+          </a>
+          <p class="font-mono text-xs">© 2026 Mesa Digital. Todos los derechos reservados.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CTA fija en Thumb Zone (solo móvil/tablet) -->
+  <div x-show="showBar" x-cloak x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="translate-y-full opacity-0" x-transition:enter-end="translate-y-0 opacity-100"
+    x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-y-0 opacity-100"
+    x-transition:leave-end="translate-y-full opacity-0"
+    class="pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-zinc-800 bg-zinc-950/90 px-4 pt-3 backdrop-blur-xl lg:hidden">
+    <a id="sticky-cta-whatsapp"
+      href="https://wa.me/51957418893?text=Hola%20Mesa%20Digital,%20quiero%20activar%20mi%20restaurante%20con%20la%20garant%C3%ADa%20de%207%20d%C3%ADas"
+      target="_blank" rel="noopener"
+      class="flex min-h-[52px] items-center justify-center gap-2 rounded-2xl bg-ok text-[15px] font-bold text-zinc-950 active:scale-[0.98]">
+      <i data-lucide="message-circle" class="h-5 w-5"></i> Activar por WhatsApp · Garantía 7 días
+    </a>
+  </div>
+
+  <script>
+    // Estado global: muestra la CTA fija cuando el hero salió de pantalla y el footer aún no entra.
+    function landing() {
+      return {
+        showBar: false,
+        heroVisible: true,
+        footerVisible: false,
+        init() {
+          const update = () => { this.showBar = !this.heroVisible && !this.footerVisible; };
+          const io = new IntersectionObserver((entries) => {
+            entries.forEach((e) => {
+              if (e.target === this.$refs.hero) this.heroVisible = e.isIntersecting;
+              if (e.target === this.$refs.footer) this.footerVisible = e.isIntersecting;
+            });
+            update();
+          }, { threshold: 0 });
+          io.observe(this.$refs.hero);
+          io.observe(this.$refs.footer);
+        }
+      };
+    }
+
+    // Reveal on scroll (una sola vez por elemento)
+    (() => {
+      const items = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) { items.forEach((el) => el.classList.add('is-visible')); return; }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      items.forEach((el) => io.observe(el));
+    })();
+
+    lucide.createIcons();
+  </script>
+</body>
+
+</html>
