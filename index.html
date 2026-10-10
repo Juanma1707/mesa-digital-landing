@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Mesa Digital | Automatización de Pedidos para Restaurantes en Piura</title>
-  <meta name="description" content="Convierte los mensajes de WhatsApp en comandas listas para cocina en 20 segundos. Sin comisiones por venta ni desorden en horas punta.">
+  <meta name="description" content="Recibe tus pedidos por WhatsApp directos, ordenados y listos para preparar. Sin comisiones por venta ni desorden en horas punta.">
   <meta name="theme-color" content="#09090b">
 
   <!-- Favicon -->
@@ -74,7 +74,7 @@
       mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 40%, transparent 100%);
     }
 
-    /* Borde dentado del ticket térmico */
+    /* Borde dentado del ticket */
     .ticket-edge {
       -webkit-mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 16px 100% repeat-x;
       mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 16px 100% repeat-x;
@@ -193,8 +193,7 @@
 
           <h1
             class="mt-6 text-[2.15rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[3.4rem]">
-            Convierte los mensajes de WhatsApp en comandas listas para cocina en
-            <span class="whitespace-nowrap font-mono text-brand">20&nbsp;segundos.</span>
+            Recibe tus pedidos por WhatsApp directos, ordenados y listos para preparar.
           </h1>
 
           <p class="mt-5 inline-flex items-center gap-2.5 text-lg font-semibold text-zinc-100 sm:text-xl">
@@ -203,9 +202,7 @@
           </p>
 
           <p class="mt-5 max-w-xl text-[15.5px] leading-relaxed text-zinc-400 sm:text-base">
-            Viernes 8:30&nbsp;p.&nbsp;m., cocina a tope y el celular no para: audios interminables, direcciones sin mapa
-            y platos mal anotados que vuelven a la cocina. Mesa Digital ordena cada pedido antes de que llegue a tus
-            manos, para que tu equipo solo se dedique a cocinar y despachar.
+            Viernes 8:30 p.m., el local lleno y el celular colapsado: clientes pidiendo la carta, audios interminables sobre salsas y dudas sobre el delivery. Mesa Digital hace que tu cliente arme su pedido solo en la web y a ti te llegue un único mensaje limpio con todo detallado, para que tu equipo solo se dedique a preparar y despachar.
           </p>
 
           <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -234,8 +231,8 @@
           </ul>
         </div>
 
-        <!-- Visual: ticket térmico estructurado -->
-        <div class="reveal relative mx-auto w-full max-w-[360px] lg:mr-0" aria-label="Ejemplo de comanda generada por Mesa Digital">
+        <!-- Visual: mensaje estructurado recibido -->
+        <div class="reveal relative mx-auto w-full max-w-[360px] lg:mr-0" aria-label="Ejemplo de pedido recibido por Mesa Digital">
           <!-- Chip: audio eliminado -->
           <div
             class="absolute -left-4 top-10 z-10 hidden items-center gap-2 rounded-xl border border-red-500/20 bg-zinc-950/90 px-3 py-2 text-xs text-zinc-400 shadow-xl backdrop-blur sm:flex lg:-left-14">
@@ -248,17 +245,17 @@
             <span class="relative flex h-2 w-2"><span
                 class="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok opacity-60"></span><span
                 class="relative inline-flex h-2 w-2 rounded-full bg-ok"></span></span>
-            Comanda lista · <span class="font-mono text-ok">20 s</span>
+            Pedido recibido en WhatsApp
           </div>
 
           <div class="rounded-[28px] border border-zinc-800 bg-zinc-900/70 p-3 shadow-2xl shadow-black/60">
             <div class="ticket-edge rounded-t-[20px] bg-[#f4f2ec] px-5 pt-5 font-mono text-[11.5px] leading-relaxed text-zinc-800">
               <div class="flex items-start justify-between border-b border-dashed border-zinc-400 pb-3">
                 <div>
-                  <p class="text-[13px] font-bold tracking-tight text-zinc-950">COMANDA #0482</p>
+                  <p class="text-[13px] font-bold tracking-tight text-zinc-950">PEDIDO #0482</p>
                   <p class="text-zinc-500">SÁB 20:47 · DELIVERY</p>
                 </div>
-                <span class="rounded bg-zinc-950 px-1.5 py-0.5 text-[10px] font-bold text-[#f4f2ec]">COCINA</span>
+                <span class="rounded bg-zinc-950 px-1.5 py-0.5 text-[10px] font-bold text-[#f4f2ec]">WHATSAPP</span>
               </div>
 
               <div class="space-y-2 border-b border-dashed border-zinc-400 py-3">
@@ -275,7 +272,7 @@
                 <p><span class="text-zinc-500">Cliente:</span> Andrea R. · 9XX XXX 214</p>
                 <p class="flex items-center gap-1"><span class="text-zinc-500">GPS:</span> Av. Grau 1240, Piura</p>
                 <p class="font-bold text-emerald-700 underline decoration-dotted underline-offset-2">↗ Abrir en Google Maps</p>
-                <p><span class="text-zinc-500">Pago:</span> <b class="text-zinc-950">YAPE</b> · Boleta</p>
+                <p><span class="text-zinc-500">Pago:</span> <b class="text-zinc-950">YAPE</b></p>
               </div>
 
               <div class="space-y-0.5 pt-3">
@@ -284,10 +281,8 @@
                 <div class="flex justify-between pt-1 text-[14px] font-bold text-zinc-950"><span>TOTAL</span><span>S/ 76.80</span></div>
               </div>
             </div>
-            <div class="mt-3 flex items-center justify-between rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3">
-              <span class="flex items-center gap-2 text-xs font-medium text-zinc-400"><i data-lucide="printer"
-                  class="h-4 w-4 text-brand"></i>Enviar a comandera</span>
-              <span class="rounded-lg bg-brand px-2.5 py-1 font-mono text-[11px] font-bold text-zinc-950">1 clic</span>
+            <div class="mt-3 flex items-center justify-center rounded-2xl border border-ok/30 bg-emerald-950/40 px-4 py-3 text-center">
+              <span class="text-xs font-semibold text-emerald-400">✓ Mensaje estructurado listo para pasar a preparación</span>
             </div>
           </div>
         </div>
@@ -321,25 +316,25 @@
                 <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-red-500/10 text-red-400"><i
                     data-lucide="mic" class="h-4 w-4"></i></span>
                 <p class="text-[15px] leading-relaxed text-zinc-300">Audios de 50 segundos pidiendo cambios de ingredientes
-                  difíciles de escuchar en cocina.</p>
+                  difíciles de escuchar con la bulla del local.</p>
               </li>
               <li class="flex gap-3.5">
                 <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-red-500/10 text-red-400"><i
                     data-lucide="map-pin-off" class="h-4 w-4"></i></span>
-                <p class="text-[15px] leading-relaxed text-zinc-300">Clientes que no mandan ubicación y toca preguntar 3
-                  veces su dirección.</p>
+                <p class="text-[15px] leading-relaxed text-zinc-300">Clientes que no mandan ubicación y toca preguntar
+                  varias veces su dirección o zona.</p>
               </li>
               <li class="flex gap-3.5">
                 <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-red-500/10 text-red-400"><i
                     data-lucide="triangle-alert" class="h-4 w-4"></i></span>
-                <p class="text-[15px] leading-relaxed text-zinc-300">Pérdida de tiempo respondiendo “¿A qué número
-                  yapeo?” y calculando el delivery a mano.</p>
+                <p class="text-[15px] leading-relaxed text-zinc-300">Pérdida de tiempo respondiendo consultas repetitivas de
+                  la carta, platos disponibles y precios.</p>
               </li>
               <li class="flex gap-3.5">
                 <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-red-500/10 text-red-400"><i
                     data-lucide="notebook-pen" class="h-4 w-4"></i></span>
-                <p class="text-[15px] leading-relaxed text-zinc-300">Comandas anotadas en servilletas o papel que generan
-                  pedidos equivocados.</p>
+                <p class="text-[15px] leading-relaxed text-zinc-300">Pedidos anotados al apuro en papeles o servilletas que
+                  terminan en platos equivocados o reclamos.</p>
               </li>
             </ul>
           </article>
@@ -356,26 +351,26 @@
               <li class="flex gap-3.5">
                 <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ok-soft text-emerald-400"><i
                     data-lucide="receipt-text" class="h-4 w-4"></i></span>
-                <p class="text-[15px] leading-relaxed text-zinc-200">Ticket térmico estructurado con nombre, cantidad,
-                  salsas y extras exactos.</p>
+                <p class="text-[15px] leading-relaxed text-zinc-200">Pedido estructurado con nombre, cantidad, salsas y
+                  extras exactos directo a tu WhatsApp.</p>
               </li>
               <li class="flex gap-3.5">
                 <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ok-soft text-emerald-400"><i
                     data-lucide="map-pinned" class="h-4 w-4"></i></span>
                 <p class="text-[15px] leading-relaxed text-zinc-200">Ubicación GPS exacta con enlace directo a Google Maps
-                  y delivery precalculado.</p>
+                  y delivery precalculado por distancia.</p>
               </li>
               <li class="flex gap-3.5">
                 <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ok-soft text-emerald-400"><i
                     data-lucide="wallet" class="h-4 w-4"></i></span>
-                <p class="text-[15px] leading-relaxed text-zinc-200">Método de pago definido (Yape / Plin / Efectivo) y
-                  comprobante (Boleta / Factura).</p>
+                <p class="text-[15px] leading-relaxed text-zinc-200">Método de pago seleccionado por el cliente (Yape, Plin
+                  o Efectivo) para que solo tengas que cobrar.</p>
               </li>
               <li class="flex gap-3.5">
                 <span class="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ok-soft text-emerald-400"><i
                     data-lucide="circle-check" class="h-4 w-4"></i></span>
-                <p class="text-[15px] leading-relaxed text-zinc-200">Comanda lista para enviar directo a la comandera o
-                  pantalla de cocina en 1 clic.</p>
+                <p class="text-[15px] leading-relaxed text-zinc-200">Cero audios ni llamadas: todo el detalle de la orden
+                  listo en un solo mensaje para pasar a cocina al instante.</p>
               </li>
             </ul>
           </article>
@@ -417,8 +412,7 @@
             </li>
             <li class="flex items-start gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4">
               <span class="font-mono text-sm font-bold text-brand">03</span>
-              <p class="text-[15px] text-zinc-300"><b class="text-white">Confirma</b> y recibe la comanda completa lista
-                para cocina en WhatsApp.</p>
+              <p class="text-[15px] text-zinc-300"><b class="text-white">Confirma y recibe</b> el pedido estructurado y listo directo en tu WhatsApp.</p>
             </li>
           </ol>
 
@@ -523,7 +517,7 @@
                 </li>
                 <li class="flex gap-3">
                   <i data-lucide="check" class="mt-0.5 h-5 w-5 shrink-0 text-ok"></i>
-                  <span>Registro automático de pedidos en una hoja de Google Sheets para que lleves el control de tus ventas</span>
+                  <span>Acceso a tu propia hoja de Google Sheets para actualizar platos, precios y disponibilidad con total autonomía</span>
                 </li>
                 <li class="flex gap-3">
                   <i data-lucide="check" class="mt-0.5 h-5 w-5 shrink-0 text-ok"></i>
@@ -600,7 +594,7 @@
               <h3 class="font-mono text-sm font-bold uppercase tracking-[0.14em] text-emerald-300">🛡️ Garantía de
                 satisfacción de 7 días</h3>
               <p class="mt-3 text-[15.5px] leading-relaxed text-zinc-200 sm:text-base">
-                Pruebas Mesa Digital un fin de semana completo en tus horas punta. Si el sistema no reduce el tiempo de toma de pedidos ni te ordena las comandas en cocina, te devolvemos el 100% de tus S/ 99.00 de digitalización. Sin preguntas ni vueltas.
+                Prueba Mesa Digital un fin de semana completo en tus horas punta. Si el sistema no agiliza la toma de tus pedidos ni ordena los mensajes que entran a tu WhatsApp, te devolvemos el 100% de tus S/ 99.00 de digitalización. Sin preguntas ni vueltas.
               </p>
             </div>
           </div>
@@ -626,7 +620,7 @@
         <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
           Tu próximo fin de semana puede ser <span class="text-brand">distinto</span>.
         </h2>
-        <p class="mt-4 text-zinc-400">Puesta en marcha sin complicaciones. Tú cocinas, Mesa Digital ordena los pedidos.</p>
+        <p class="mt-4 text-zinc-400">Puesta en marcha sin complicaciones. Tú cocinas, Mesa Digital ordena tus pedidos.</p>
         <a id="footer-cta-whatsapp"
           href="https://wa.me/51957418893?text=Hola%20Mesa%20Digital,%20quiero%20activar%20mi%20restaurante%20con%20el%20primer%20mes%20gratis%20y%20la%20garant%C3%ADa%20de%207%20d%C3%ADas"
           target="_blank" rel="noopener"
